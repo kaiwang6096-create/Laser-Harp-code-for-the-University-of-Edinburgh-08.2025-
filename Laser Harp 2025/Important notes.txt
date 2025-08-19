@@ -1,0 +1,1 @@
+In "Laser Harp 2025/Analog joystick slide and distance sensor vibrato" and "Laser Harp 2025/Analog joystick slide and switch vibrato". I tried replacing the original separate definitions of sensors with arrays. However, the original versions were not deleted, which may cause some potential errors that have not yet been found.
