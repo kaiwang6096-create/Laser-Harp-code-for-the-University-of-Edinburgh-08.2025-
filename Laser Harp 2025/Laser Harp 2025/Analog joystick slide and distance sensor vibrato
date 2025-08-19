@@ -1,0 +1,608 @@
+// define the pins used
+#define VS1053_RX  2 // This is the pin that connects to the RX pin on VS1053
+
+#define VS1053_RESET 9 // This is the pin that connects to the RESET pin on VS1053
+// If you have the Music Maker shield, you don't need to connect the RESET pin!
+
+// If you're using the VS1053 breakout:
+// Don't forget to connect the GPIO #0 to GROUND and GPIO #1 pin to 3.3V
+// If you're using the Music Maker shield:
+// Don't forget to connect the GPIO #1 pin to 3.3V and the RX pin to digital #2
+
+// See http://www.vlsi.fi/fileadmin/datasheets/vs1053.pdf Pg 31
+#define VS1053_BANK_DEFAULT 0x00
+#define VS1053_BANK_DRUMS1 0x78
+#define VS1053_BANK_DRUMS2 0x7F
+#define VS1053_BANK_MELODY 0x79
+
+// See http://www.vlsi.fi/fileadmin/datasheets/vs1053.pdf Pg 32 for more!
+#define VS1053_GM1_OCARINA 80
+#define VS1053_GM1_CELLO 43
+#define VS1053_GM1_APPLAUSE 127
+#define VS1053_GM1_KALIMBA 109
+#define VS1053_GM1_HARP 47
+#define VS1053_GM1_CELESTA 9
+
+#define MIDI_NOTE_ON  0x90
+#define MIDI_NOTE_OFF 0x80
+#define MIDI_CHAN_MSG 0xB0
+#define MIDI_CHAN_BANK 0x00
+#define MIDI_CHAN_VOLUME 0x07
+#define MIDI_CHAN_PROGRAM 0xC0
+
+#define SENSOR_COUNT 24
+
+#if defined(__AVR_ATmega328__) || defined(__AVR_ATmega328P__)
+  #include <SoftwareSerial.h>
+  SoftwareSerial VS1053_MIDI(0, 2); // TX only, do not use the 'rx' side
+#else
+  //on a Mega/Leonardo you may have to change the pin to one that 
+  // software serial support uses OR use a hardware serial port!
+  #define VS1053_MIDI Serial1
+#endif
+
+//int sensorPin0 = 22;
+//int sensorPin1 = 23;
+//int sensorPin2 = 24;
+//int sensorPin3 = 25;
+//int sensorPin4 = 26;
+//int sensorPin5 = 27;
+int sensorPin6 = 28;
+int sensorPin7 = 29;
+int sensorPin8 = 30;
+//int sensorPin9 = 31;
+int sensorPin10 = 32;
+//int sensorPin11 = 33;
+int sensorPin12 = 34;
+//int sensorPin13 = 35;
+//int sensorPin14 = 36;
+int sensorPin15 = 37;
+int sensorPin16 = 38;
+//int sensorPin17 = 39;
+//int sensorPin18 = 40;
+//int sensorPin19 = 41;
+//int sensorPin20 = 42;
+//int sensorPin21 = 43;
+//int sensorPin22 = 44;
+//int sensorPin23 = 45;
+
+//int sensorValue0 = 0;
+//int sensorValue1 = 0; 
+//int sensorValue2 = 0;
+//int sensorValue3 = 0;
+//int sensorValue4 = 0; 
+//int sensorValue5 = 0;
+int sensorValue6 = 0;
+int sensorValue7 = 0;
+int sensorValue8 = 0;
+//int sensorValue9 = 0;
+int sensorValue10 = 0; 
+//int sensorValue11 = 0; 
+int sensorValue12 = 0; 
+//int sensorValue13 = 0;
+//int sensorValue14 = 0;
+int sensorValue15 = 0;
+int sensorValue16 = 0;
+//int sensorValue17 = 0;
+//int sensorValue18 = 0; 
+//int sensorValue19 = 0;
+//int sensorValue20 = 0;
+//int sensorValue21 = 0;
+//int sensorValue22 = 0;
+//int sensorValue23 = 0;
+
+//int nextSensor0 = 0;
+//int nextSensor1 = 0;
+//int nextSensor2 = 0;
+//int nextSensor3 = 0;
+//int nextSensor4 = 0;
+//int nextSensor5 = 0;
+int nextSensor6 = 0;
+int nextSensor7 = 0;
+int nextSensor8 = 0;
+//int nextSensor9 = 0;
+int nextSensor10 = 0;
+//int nextSensor11 = 0;
+int nextSensor12 = 0;
+//int nextSensor13 = 0;
+//int nextSensor14 = 0;
+int nextSensor15 = 0;
+int nextSensor16 = 0;
+//int nextSensor17 = 0;
+//int nextSensor18 = 0;
+//int nextSensor19 = 0;
+//int nextSensor20 = 0;
+//int nextSensor21 = 0;
+//int nextSensor22 = 0;
+//int nextSensor23 = 0;
+
+int volume = 127;
+double line;
+
+const int trigPin1 = 53;
+const int trigPin2 = 51;
+const int trigPin3 = 49;
+const int trigPin4 = 47;
+
+const int echoPin1 = 52;
+const int echoPin2 = 50;
+const int echoPin3 = 48;
+const int echoPin4 = 46;
+
+long duration, distance, sensor1, sensor2, sensor3, sensor4, distanceVolume;
+
+// Control the vibrato state
+bool isPressed10 = false;       //Whether it is pressed or not.
+bool isVibrato10 = false;       // Whether it is currently in vibrato mode
+bool vibratoToggle10 = false;   // Oscillation Switching Flag
+unsigned long vibratoLastSwitch10 = 0;    // Last oscillation switching time
+uint8_t currentNote10 = 63;    // Current vibrato note (base note)
+
+/*bool isPressed11 = false;       //Whether it is pressed or not.
+bool isVibrato11 = false;       // Whether it is currently in vibrato mode
+bool vibratoToggle11 = false;   // Oscillation Switching Flag
+unsigned long vibratoLastSwitch11 = 0;    // Last oscillation switching time
+uint8_t currentNote11 = 62;    // Current vibrato note (base note)*/
+
+bool isPressed12 = false;       //Whether it is pressed or not.
+bool isVibrato12 = false;       // Whether it is currently in vibrato mode
+bool vibratoToggle12 = false;   // Oscillation Switching Flag
+unsigned long vibratoLastSwitch12 = 0;    // Last oscillation switching time
+uint8_t currentNote12 = 61;    // Current vibrato note (base note)
+
+int16_t pitchBendAmount = 2048;  
+bool pitchBendDirection = true; 
+unsigned long lastPitchBendTime = 0;
+
+const int slidePin = A1; 
+const int slideMidLow = 500;
+const int slideMidHigh = 600;
+const int slideMaxDelta = 600; 
+const int maxSlideNotes = 12;
+
+bool isInSlide = false;
+int slideReferenceValue = 512;
+int slideStartNote = -1;        
+int slideEndNote = -1;          
+bool slideBoundaryLocked = false; 
+
+int currentNotePlaying = -1;         
+bool currentNotePressed = false;    
+
+const int numUsed = 7;
+const int sensorPins[numUsed] = {28, 29, 30, 32, 34, 37, 38};
+const int sensorNotes[numUsed] = {67, 66, 65, 63, 61, 58, 57};
+
+bool isNotePlaying[SENSOR_COUNT] = {false};
+bool isVibrato[numUsed] = {false};
+bool vibratoToggle[numUsed] = {false};
+unsigned long vibratoLastSwitch[numUsed] = {0};
+
+float lastDistances[3] = {0, 0, 0};  
+int distanceIndex = 0;              
+bool vibratoActive = false;         
+bool vibratoToggleState = false;
+unsigned long lastVibratoTime = 0;
+
+void setPitchBendRange(uint8_t channel, uint8_t semitones, uint8_t cents = 0) {
+  // RPN 0,0: Pitch Bend Sensitivity
+  VS1053_MIDI.write(0xB0 | channel); // Control Change
+  VS1053_MIDI.write(101);            // RPN MSB
+  VS1053_MIDI.write(0);              // Pitch bend range
+  VS1053_MIDI.write(0xB0 | channel);
+  VS1053_MIDI.write(100);            // RPN LSB
+  VS1053_MIDI.write(0);
+
+  VS1053_MIDI.write(0xB0 | channel);
+  VS1053_MIDI.write(6);              // Data Entry MSB
+  VS1053_MIDI.write(semitones);     // semitone range (e.g., 12 for ±12)
+
+  VS1053_MIDI.write(0xB0 | channel);
+  VS1053_MIDI.write(38);            // Data Entry LSB
+  VS1053_MIDI.write(cents);         // fine adjustment
+}
+
+void setup() {
+  Serial.begin(9600);
+  for (int i = 0; i < numUsed; i++) {
+  pinMode(sensorPins[i], INPUT_PULLUP); 
+}
+
+  //pinMode(sensorPin0,INPUT);
+  //pinMode(sensorPin1,INPUT);
+  //pinMode(sensorPin2,INPUT);
+  //pinMode(sensorPin3,INPUT);
+  //pinMode(sensorPin4,INPUT);
+  //pinMode(sensorPin5,INPUT);
+//  pinMode(sensorPin6,INPUT_PULLUP);
+ // pinMode(sensorPin7,INPUT_PULLUP);
+  //pinMode(sensorPin8,INPUT_PULLUP);
+  //pinMode(sensorPin9,INPUT);
+ // pinMode(sensorPin10,INPUT_PULLUP);
+ //pinMode(sensorPin11, INPUT_PULLUP);
+
+ // pinMode(sensorPin12,INPUT_PULLUP);
+  //pinMode(sensorPin13,INPUT);
+  //pinMode(sensorPin14,INPUT);
+ // pinMode(sensorPin15,INPUT_PULLUP);
+  //pinMode(sensorPin16,INPUT_PULLUP);
+  //pinMode(sensorPin17,INPUT);
+  //pinMode(sensorPin18,INPUT);
+  //pinMode(sensorPin19,INPUT);
+  //pinMode(sensorPin20,INPUT);
+  //pinMode(sensorPin21,INPUT);
+ // pinMode(sensorPin22,INPUT);
+  //pinMode(sensorPin23,INPUT);
+  pinMode(10, INPUT_PULLUP); // Additional control switch pin (used for vibrato mode)
+
+  pinMode(trigPin1, OUTPUT);
+  pinMode(echoPin1, INPUT);
+  pinMode(trigPin2, OUTPUT);
+  pinMode(echoPin2, INPUT);
+  pinMode(trigPin3, OUTPUT);
+  pinMode(echoPin3, INPUT);
+  pinMode(trigPin4, OUTPUT);
+  pinMode(echoPin4, INPUT);
+
+  VS1053_MIDI.begin(31250); // MIDI uses a 'strange baud rate'
+  
+  pinMode(VS1053_RESET, OUTPUT);
+  digitalWrite(VS1053_RESET, LOW);
+  delay(10);
+  digitalWrite(VS1053_RESET, HIGH);
+  delay(10);
+  
+  midiSetChannelBank(0, VS1053_BANK_MELODY);
+  midiSetInstrument(0, 41);
+  midiSetChannelVolume(0, 127);
+
+ Serial.println("Monitoring A1 (slidePin)...");
+
+ setPitchBendRange(0, 5); 
+
+}
+
+void loop() {
+
+  bool vibratoEnabled = (digitalRead(10) == LOW);
+
+  int slideAnalog = analogRead(slidePin);
+  bool outsideMid = (slideAnalog < slideMidLow || slideAnalog > slideMidHigh);
+ // Check if pin 10 is pulled low (indicating button is pressed), 
+ // used to determine whether to enable the vibrato mode
+  SonarSensor(trigPin1, echoPin1);
+  sensor1  = distance;
+  SonarSensor(trigPin2, echoPin2);
+  sensor2 = distance;
+
+ lastDistances[distanceIndex] = sensor2;
+ distanceIndex = (distanceIndex + 1) % 3;
+
+ float d1 = abs(lastDistances[0] - lastDistances[1]);
+ float d2 = abs(lastDistances[1] - lastDistances[2]);
+ float d3 = abs(lastDistances[0] - lastDistances[2]);
+
+ if (d1 >= 1 && d2 >= 1 && d3 >= 1) {
+   vibratoActive = true;
+ } else {
+  vibratoActive = false;
+}
+
+  SonarSensor(trigPin3, echoPin3);
+  sensor3 = distance;
+  SonarSensor(trigPin4, echoPin4);
+  sensor4 = distance;
+
+  distanceVolume = min(sensor1, min(sensor2, min(sensor3, sensor4)));
+
+  if (distanceVolume <= 5){
+    volume = 31.75;
+  }else if (distanceVolume <= 6){
+    volume = 63.5;
+  }else if (distanceVolume <= 8){
+    volume = 95.25;
+  }else{
+    volume = 127;
+  };
+  
+  //sensorValue0 = digitalRead(sensorPin0);
+  //sensorValue1 = digitalRead(sensorPin1);
+  //sensorValue2 = digitalRead(sensorPin2);
+  //sensorValue3 = digitalRead(sensorPin3);
+  //sensorValue4 = digitalRead(sensorPin4);
+  //sensorValue5 = digitalRead(sensorPin5);
+  sensorValue6 = digitalRead(sensorPin6);
+  sensorValue7 = digitalRead(sensorPin7);
+  sensorValue8 = digitalRead(sensorPin8);
+  //sensorValue9 = digitalRead(sensorPin9);
+  sensorValue10 = digitalRead(sensorPin10);
+  //sensorValue11 = digitalRead(sensorPin11);
+  sensorValue12 = digitalRead(sensorPin12);
+  //sensorValue13 = digitalRead(sensorPin13);
+  //sensorValue14 = digitalRead(sensorPin14);
+  sensorValue15 = digitalRead(sensorPin15);
+  sensorValue16 = digitalRead(sensorPin16);
+  //sensorValue17 = digitalRead(sensorPin17);
+  //sensorValue18 = digitalRead(sensorPin18);
+  //sensorValue19 = digitalRead(sensorPin19);
+  //sensorValue20 = digitalRead(sensorPin20);
+  //sensorValue21 = digitalRead(sensorPin21);
+  //sensorValue22 = digitalRead(sensorPin22);
+  //sensorValue23 = digitalRead(sensorPin23); 
+  // put your main code here, to run repeatedly:
+
+for (int i = 0; i < numUsed; i++) {
+  int pin = sensorPins[i];
+  int note = sensorNotes[i];
+  int val = digitalRead(pin);
+
+  if (isInSlide || outsideMid) {
+    if (val == LOW) {
+      if (currentNotePlaying == -1) {
+        midiNoteOn(0, note, volume);
+        isNotePlaying[i] = true;
+        currentNotePlaying = note;
+      }
+    } else {
+      if (isNotePlaying[i]) {
+        midiNoteOff(0, note, 127);
+        isNotePlaying[i] = false;
+
+        if (currentNotePlaying == note) {
+          currentNotePlaying = -1;
+          sendPitchBend(0, 0); 
+        }
+      }
+    }
+  }
+
+  else {
+    if (val == LOW) {
+      if (!isNotePlaying[i]) {
+        midiNoteOn(0, note, volume);
+        isNotePlaying[i] = true;
+      }
+    } else {
+      if (isNotePlaying[i]) {
+        midiNoteOff(0, note, 127);
+        isNotePlaying[i] = false;
+      }
+    }
+  }
+
+if (!(isInSlide || outsideMid) && vibratoEnabled && val == LOW && vibratoActive) {
+  if (millis() - vibratoLastSwitch[i] >= 40) {
+    vibratoLastSwitch[i] = millis();
+    vibratoToggle[i] = !vibratoToggle[i];
+    int16_t bendVal = vibratoToggle[i] ? pitchBendAmount : -pitchBendAmount;
+    sendPitchBend(0, bendVal);
+  }
+} else if (isVibrato[i]) {
+  sendPitchBend(0, 0);
+  vibratoToggle[i] = false;
+  isVibrato[i] = false;
+}
+
+}
+  
+if (!isInSlide && currentNotePlaying == -1) {
+  if (sensorValue10 == LOW) {
+    currentNotePlaying = 63;
+    currentNotePressed = true;
+    slideStartNote = 63;
+    midiNoteOn(0, currentNotePlaying, volume);
+  } else if (sensorValue12 == LOW) {
+    currentNotePlaying = 61;
+    currentNotePressed = true;
+    slideStartNote = 61;
+    midiNoteOn(0, currentNotePlaying, volume);
+  } else if (sensorValue6 == LOW) {
+    currentNotePlaying = 67;
+    currentNotePressed = true;
+    slideStartNote = 67;
+    midiNoteOn(0, currentNotePlaying, volume);
+  } else if (sensorValue7 == LOW) {
+    currentNotePlaying = 66;
+    currentNotePressed = true;
+    slideStartNote = 66;
+    midiNoteOn(0, currentNotePlaying, volume);
+  } else if (sensorValue8 == LOW) {
+    currentNotePlaying = 65;
+    currentNotePressed = true;
+    slideStartNote = 65;
+    midiNoteOn(0, currentNotePlaying, volume);
+  } else if (sensorValue15 == LOW) {
+    currentNotePlaying = 58;
+    currentNotePressed = true;
+    slideStartNote = 58;
+    midiNoteOn(0, currentNotePlaying, volume);
+  } else if (sensorValue16 == LOW) {
+    currentNotePlaying = 57;
+    currentNotePressed = true;
+    slideStartNote = 57;
+    midiNoteOn(0, currentNotePlaying, volume);
+  }
+}
+
+if (isInSlide && !slideBoundaryLocked) {
+  if (sensorValue6 == LOW && slideStartNote != 67) {
+    slideEndNote = 67; slideBoundaryLocked = true;
+  } else if (sensorValue7 == LOW && slideStartNote != 66) {
+    slideEndNote = 66; slideBoundaryLocked = true;
+  } else if (sensorValue8 == LOW && slideStartNote != 65) {
+    slideEndNote = 65; slideBoundaryLocked = true;
+  } else if (sensorValue10 == LOW && slideStartNote != 63) {
+    slideEndNote = 63; slideBoundaryLocked = true;
+  } else if (sensorValue12 == LOW && slideStartNote != 61) {
+    slideEndNote = 61; slideBoundaryLocked = true;
+  } else if (sensorValue15 == LOW && slideStartNote != 58) {
+    slideEndNote = 58; slideBoundaryLocked = true;
+  } else if (sensorValue16 == LOW && slideStartNote != 57) {
+    slideEndNote = 57; slideBoundaryLocked = true;
+  }
+}
+
+if (isInSlide && currentNotePlaying != -1) {
+  bool sensorStillHeld = false;
+
+  if (currentNotePlaying == 63) sensorStillHeld = (sensorValue10 == LOW);
+  else if (currentNotePlaying == 61) sensorStillHeld = (sensorValue12 == LOW);
+  else if (currentNotePlaying == 67) sensorStillHeld = (sensorValue6 == LOW);
+  else if (currentNotePlaying == 66) sensorStillHeld = (sensorValue7 == LOW);
+  else if (currentNotePlaying == 65) sensorStillHeld = (sensorValue8 == LOW);
+  else if (currentNotePlaying == 58) sensorStillHeld = (sensorValue15 == LOW);
+  else if (currentNotePlaying == 57) sensorStillHeld = (sensorValue16 == LOW);
+
+if (!sensorStillHeld) {
+  midiNoteOff(0, currentNotePlaying, 127);
+  currentNotePlaying = -1;
+  currentNotePressed = false;
+  slideStartNote = -1; 
+  }
+
+}
+
+if (outsideMid && !isInSlide && currentNotePlaying != -1) {
+  slideStartNote = currentNotePlaying;
+  slideReferenceValue = slideAnalog;
+  isInSlide = true;
+  }
+
+if (isInSlide && slideStartNote != -1) {
+  int delta = slideAnalog - slideReferenceValue;
+  float bendRatio = (float)delta / slideMaxDelta;
+  bendRatio = constrain(bendRatio, -1.0, 1.0);
+
+  int16_t bendVal;
+
+  bendVal = (int16_t)(bendRatio * 8192);
+
+ if (slideBoundaryLocked && slideEndNote != -1) {
+  int noteDiff = slideEndNote - slideStartNote;
+  int maxBendLimit = constrain(noteDiff * 8192 / 5, -8192, 8191);  
+
+  if (noteDiff > 0 && bendRatio > 0) {
+    bendVal = min(bendVal, maxBendLimit);
+  } else if (noteDiff < 0 && bendRatio < 0) {
+    bendVal = max(bendVal, maxBendLimit);
+  }
+}
+  sendPitchBend(0, bendVal);
+
+  if (slideBoundaryLocked && currentNotePlaying != slideEndNote) {
+    bool reachedTarget = false;
+    if (slideEndNote > slideStartNote && bendRatio >= 0.98) {
+      reachedTarget = true;
+    } else if (slideEndNote < slideStartNote && bendRatio <= -0.98) {
+      reachedTarget = true;
+    }
+
+   if (reachedTarget) {
+   sendPitchBend(0, 0); 
+
+   midiNoteOff(0, currentNotePlaying, 127);
+   currentNotePlaying = slideEndNote;
+   midiNoteOn(0, currentNotePlaying, volume); 
+   currentNotePressed = true;
+
+   isInSlide = false;    
+   slideStartNote = -1;
+   slideEndNote = -1;
+   slideBoundaryLocked = false;
+   }
+
+  }
+}
+
+if (!outsideMid && isInSlide) {
+  isInSlide = false;
+  slideStartNote = -1;
+  sendPitchBend(0, 0);
+}
+
+if (slideBoundaryLocked) {
+  bool targetReleased = false;
+  if (slideEndNote == 67) targetReleased = (sensorValue6 == HIGH);
+  else if (slideEndNote == 66) targetReleased = (sensorValue7 == HIGH);
+  else if (slideEndNote == 65) targetReleased = (sensorValue8 == HIGH);
+  else if (slideEndNote == 63) targetReleased = (sensorValue10 == HIGH);
+  else if (slideEndNote == 61) targetReleased = (sensorValue12 == HIGH);
+  else if (slideEndNote == 58) targetReleased = (sensorValue15 == HIGH);
+  else if (slideEndNote == 57) targetReleased = (sensorValue16 == HIGH);
+
+  if (targetReleased) {
+    slideEndNote = -1;
+    slideBoundaryLocked = false;
+  }
+}
+Serial.print("Vibrato Distance (sensor2): ");
+Serial.print(sensor2);
+Serial.println(" cm");
+}
+
+void midiSetInstrument(uint8_t chan, uint8_t inst) {
+  if (chan > 15) return;
+  inst --; // page 32 has instruments starting with 1 not 0 :(
+  if (inst > 127) return;
+  
+  VS1053_MIDI.write(MIDI_CHAN_PROGRAM | chan);  
+  VS1053_MIDI.write(inst);           
+}
+
+
+void midiSetChannelVolume(uint8_t chan, uint8_t vol) {
+  if (chan > 15) return;
+  if (vol > 127) return;
+  
+  VS1053_MIDI.write(MIDI_CHAN_MSG | chan);
+  VS1053_MIDI.write(MIDI_CHAN_VOLUME);
+  VS1053_MIDI.write(vol);
+}
+
+void midiSetChannelBank(uint8_t chan, uint8_t bank) {
+  if (chan > 15) return;
+  if (bank > 127) return;
+  
+  VS1053_MIDI.write(MIDI_CHAN_MSG | chan);
+  VS1053_MIDI.write((uint8_t)MIDI_CHAN_BANK);
+  VS1053_MIDI.write(bank);
+}
+
+void midiNoteOn(uint8_t chan, uint8_t n, uint8_t vel) {
+  if (chan > 15) return;
+  if (n > 127) return;
+  if (vel > 127) return;
+  
+  VS1053_MIDI.write(MIDI_NOTE_ON | chan);
+  VS1053_MIDI.write(n);
+  VS1053_MIDI.write(vel);
+}
+
+void midiNoteOff(uint8_t chan, uint8_t n, uint8_t vel) {
+  if (chan > 15) return;
+  if (n > 127) return;
+  if (vel > 127) return;
+  
+  VS1053_MIDI.write(MIDI_NOTE_OFF | chan);
+  VS1053_MIDI.write(n);
+  VS1053_MIDI.write(vel);
+}
+void SonarSensor(int trigPin, int echoPin){
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+
+  duration = pulseIn(echoPin, HIGH);
+  distance = (duration/2)/29.1;
+}
+void sendPitchBend(uint8_t chan, int16_t bend) {
+  bend = constrain(bend, -8192, 8191); 
+  uint16_t value = bend + 8192;      
+  uint8_t lsb = value & 0x7F;         
+  uint8_t msb = (value >> 7) & 0x7F;   
+  VS1053_MIDI.write(0xE0 | (chan & 0x0F));  
+  VS1053_MIDI.write(lsb);
+  VS1053_MIDI.write(msb);
+} 
