@@ -170,9 +170,7 @@ uint8_t glideEndNote = 0;
 unsigned long glideStartTime = 0;
 const unsigned long glideDuration = 800; 
 
-
 int currentPlayingNote = -1;  
-
 
 int16_t pitchBendAmount = 2048; 
 bool pitchBendDirection = true;
@@ -227,8 +225,6 @@ void setup() {
   midiSetChannelBank(0, VS1053_BANK_MELODY);
   midiSetInstrument(0, 41);
   midiSetChannelVolume(0, 127);
-
-
 }
 
 void loop() {
@@ -283,7 +279,6 @@ void loop() {
   //sensorValue22 = digitalRead(sensorPin22);
   //sensorValue23 = digitalRead(sensorPin23); 
 
-
 if (glideMode && !glideActive) {
   int note = getSingleActiveSensorNote();
   if (note >= 0) {
@@ -307,10 +302,8 @@ if (glideMode && glideActive && glideWaitNextNote) {
     delay(20);
     sendPitchBend(0, 0);
 
-
     midiNoteOff(0, glideStartNote, 127);
     delay(10);
-
 
     midiNoteOn(0, glideEndNote, volume);
 
@@ -321,12 +314,10 @@ if (glideMode && glideActive && glideWaitNextNote) {
   }
 }
 
-
 if (!glideMode && glideActive) {
   glideActive = false;
   glideWaitNextNote = false;
 }
-
 
   // put your main code here, to run repeatedly:
   /*if (sensorValue0 == LOW){
@@ -592,11 +583,6 @@ if (!glideMode && glideActive) {
   }
 }*/
 
-
-
-
-
-
    if (sensorValue12 == LOW) {
   if (!isPressed12) {
     isPressed12 = true;
@@ -827,11 +813,6 @@ if (!glideMode && glideActive) {
       midiNoteOff(0,50,127);
     }
   };*/
-  
-
-  testUltrasonicSensorPerformance(); 
-
-
 }
 
 void midiSetInstrument(uint8_t chan, uint8_t inst) {
@@ -925,36 +906,3 @@ void performGlide(uint8_t startNote, uint8_t endNote) {
   delay(5);
   midiNoteOn(0, endNote, volume);
 }
-void testUltrasonicSensorPerformance() {
-  const int testCount = 1;
-  long lastDistance = -1;
-  unsigned long lastTime = millis();
-  Serial.println("Testing ultrasonic sensor performance...");
-  Serial.println("Index\tDistance(cm)\tDelta(cm)\tTime(ms)\tInterval(ms)");
-
-  for (int i = 0; i < testCount; i++) {
-    unsigned long t0 = millis();
-
-    SonarSensor(trigPin1, echoPin1);
-    long d = distance;
-    unsigned long t1 = millis();
-
-    long delta = (lastDistance == -1) ? 0 : d - lastDistance;
-    long interval = t1 - lastTime;
-
-    Serial.print(i);
-    Serial.print("\t");
-    Serial.print(d);
-    Serial.print("\t\t");
-    Serial.print(delta);
-    Serial.print("\t\t");
-    Serial.print(t1);
-    Serial.print("\t\t");
-    Serial.println(interval);
-
-    lastDistance = d;
-    lastTime = t1;
-    delay(50); 
-  }
-}
-
