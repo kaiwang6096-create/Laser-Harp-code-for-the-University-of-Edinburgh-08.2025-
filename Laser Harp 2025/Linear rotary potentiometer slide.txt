@@ -211,7 +211,6 @@ void setup() {
   midiSetChannelBank(0, VS1053_BANK_MELODY);
   midiSetInstrument(0, 41);
   midiSetChannelVolume(0, 127);
-
 }
 
 void loop() {
@@ -222,7 +221,6 @@ if (slideAnalog < 1000 && !isSliding && !slideCompleted) {
   isSliding = true;
   slideStartTime = millis();
 }
-
 
 if (slideAnalog <= 50 && isSliding) {
   slideCompleted = true;
@@ -238,14 +236,11 @@ if (slideAnalog <= 50 && isSliding) {
   sendPitchBend(0, 0);  
 }
 
-
-
 if (slideAnalog > 1000 && slideCompleted) {
   slideCompleted = false;
   slideStartNote = -1;
   slideTargetNote = -1;
 }
-
 
   bool vibratoEnabled = (digitalRead(10) == LOW);
 // Check if pin 10 is pulled low (indicating button is pressed), 
@@ -625,7 +620,6 @@ if (slideAnalog > 1000 && slideCompleted) {
   }
 }
 
-
   /*if(sensorValue13 == LOW){
     if (nextSensor13 == 0){
       line = line + 1024;
@@ -889,4 +883,3 @@ void sendPitchBend(uint8_t chan, int16_t bend) {
   VS1053_MIDI.write(lsb);
   VS1053_MIDI.write(msb);
 }
-
