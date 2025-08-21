@@ -504,8 +504,6 @@ midiNoteOn(0, currentNote11, volume);
 
   bool d10Low = digitalRead(10) == LOW;
 
-  
-
   if (isVibrato11) {
     const uint16_t vibratoRate = 100;
     const int16_t vibratoAmount = 2048;
@@ -526,9 +524,6 @@ midiNoteOn(0, currentNote11, volume);
   }
 }*/
 
-
-
-
  if (sensorValue12 == LOW) {
   if (!isPressed12) {
     isPressed12 = true;
@@ -542,7 +537,6 @@ midiNoteOn(0, currentNote12, volume);
   }
 
   bool d10Low = digitalRead(10) == LOW;
-
 
   if (isVibrato12) {
     const uint16_t vibratoRate = 100;
@@ -564,7 +558,6 @@ midiNoteOn(0, currentNote12, volume);
     isVibrato12 = false;
   }
 }
-
 
   /*if(sensorValue13 == LOW){
     if (nextSensor13 == 0){
